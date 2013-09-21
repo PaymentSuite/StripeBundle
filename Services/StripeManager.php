@@ -85,7 +85,7 @@ class StripeManager
     public function processPayment(StripeMethod $paymentMethod, $amount)
     {
         /// first check that amounts are the same
-        $cartAmount = (float) $this->paymentBridge->getAmount() * 100;
+        $cartAmount = (float) $this->paymentBridge->getAmount();
 
         /**
          * If both amounts are different, execute Exception

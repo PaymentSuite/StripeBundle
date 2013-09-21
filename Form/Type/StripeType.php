@@ -68,7 +68,7 @@ class StripeType extends AbstractType
                 'choices' => array_combine(range(2013, 2025), range(2013, 2025)),
             ))
             ->add('amount', 'hidden', array(
-                'data'  =>  number_format($this->paymentBridge->getAmount(), 2) * 100
+                'data'  =>  $this->paymentBridge->getAmount()
             ))
             ->add('api_token', 'hidden', array(
                 'data'  =>  ''
