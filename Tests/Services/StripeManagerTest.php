@@ -26,7 +26,7 @@ class StripeManagerTest extends \PHPUnit_Framework_TestCase
      * 
      * Currency
      */
-    const CURRENCY = 'EUR';
+    const CURRENCY = 'USD';
 
     /**
      * @var string
@@ -41,12 +41,12 @@ class StripeManagerTest extends \PHPUnit_Framework_TestCase
      * 
      * Cart amount
      */
-    const CART_AMOUNT = 10;
+    const CART_AMOUNT = 50;
 
     /**
      * @var integer
      *
-     * Cart amount
+     * Cart number
      */
     const CART_NUMBER = 4242424242424242;
 
@@ -54,7 +54,7 @@ class StripeManagerTest extends \PHPUnit_Framework_TestCase
     /**
      * @var integer
      *
-     * Cart amount
+     * Cart expire month
      */
     const CART_EXPIRE_MONTH = 12;
 
@@ -62,7 +62,7 @@ class StripeManagerTest extends \PHPUnit_Framework_TestCase
     /**
      * @var integer
      *
-     * Cart amount
+     * Cart expire year
      */
     const CART_EXPIRE_YEAR = 2017;
 
@@ -100,27 +100,11 @@ class StripeManagerTest extends \PHPUnit_Framework_TestCase
 
 
     /**
-     * @var CartWrapper
+     * @var PaymentBridgeInterface
      * 
-     * Cart Wrapper object
+     * Payment bridge object
      */
-    private $cartWrapper;
-
-
-    /**
-     * @var CurrencyWrapper
-     * 
-     * Currency Wrapper
-     */
-    private $currencyWrapper;
-
-
-    /**
-     * @var OrderWrapper
-     * 
-     * Order Wrapper object
-     */
-    private $orderWrapper;
+    private $paymentBridgeInterface;
 
 
     /**
@@ -137,19 +121,8 @@ class StripeManagerTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
 
-        $this->cartWrapper = $this
-            ->getMockBuilder('Mmoreram\PaymentCoreBundle\Services\Interfaces\CartWrapperInterface')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->currencyWrapper = $this
-            ->getMockBuilder('Mmoreram\PaymentCoreBundle\Services\Wrapper\CurrencyWrapper')
-            ->disableOriginalConstructor()
-            ->setMethods(array('getCurrency'))
-            ->getMock();
-
-        $this->orderWrapper = $this
-            ->getMockBuilder('Mmoreram\PaymentCoreBundle\Services\Interfaces\OrderWrapperInterface')
+        $this->paymentBridgeInterface = $this
+            ->getMockBuilder('Mmoreram\PaymentCoreBundle\Services\Interfaces\PaymentBridgeInterface')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -168,61 +141,13 @@ class StripeManagerTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->stripeManager = new StripeManager($this->paymentEventDispatcher, $this->stripeTransactionWrapper, '', $this->cartWrapper, $this->currencyWrapper, $this->orderWrapper);
-    }
-
-
-    /**
-     * Testing different ammunts
-     * 
-     * @expectedException \Mmoreram\PaymentCoreBundle\Exception\PaymentAmountsNotMatchException
-     */
-    public function testDifferentAmounts()
-    {
-        $this
-            ->stripeMethod
-            ->expects($this->once())
-            ->method('getAmount')
-            ->will($this->returnValue(self::CART_AMOUNT * 100));
-
-        $this
-            ->cartWrapper
-            ->expects($this->once())
-            ->method('getAmount')
-            ->will($this->returnValue(500));
-
-        $this
-            ->paymentEventDispatcher
-            ->expects($this->any())
-            ->method('notifyPaymentReady');
-
-        $this
-            ->paymentEventDispatcher
-            ->expects($this->any())
-            ->method('notifyPaymentDone');
-
-        $this
-            ->paymentEventDispatcher
-            ->expects($this->any())
-            ->method('notifyPaymentFail');
-
-        $this
-            ->paymentEventDispatcher
-            ->expects($this->any())
-            ->method('notifyPaymentSuccess');
-
-        $this
-            ->paymentEventDispatcher
-            ->expects($this->any())
-            ->method('notifyPaymentOrderCreated');
-
-        $this->stripeManager->processPayment($this->stripeMethod);
+        $this->stripeManager = new StripeManager($this->paymentEventDispatcher, $this->stripeTransactionWrapper, $this->paymentBridgeInterface);
     }
 
 
     /**
      * Testing payment error
-     * 
+     *
      * @expectedException \Mmoreram\PaymentCoreBundle\Exception\PaymentException
      */
     public function testPaymentError()
@@ -250,22 +175,16 @@ class StripeManagerTest extends \PHPUnit_Framework_TestCase
             ->method('setTransactionStatus');
 
         $this
-            ->currencyWrapper
+            ->paymentBridgeInterface
             ->expects($this->once())
             ->method('getCurrency')
             ->will($this->returnValue(self::CURRENCY));
 
         $this
-            ->cartWrapper
+            ->paymentBridgeInterface
             ->expects($this->once())
             ->method('getAmount')
             ->will($this->returnValue(self::CART_AMOUNT));
-
-        $this
-            ->cartWrapper
-            ->expects($this->once())
-            ->method('getCartDescription')
-            ->will($this->returnValue(self::CART_DESCRIPTION));
 
         $cart = array(
             'number' => self::CART_NUMBER,
@@ -290,32 +209,28 @@ class StripeManagerTest extends \PHPUnit_Framework_TestCase
         $this
             ->paymentEventDispatcher
             ->expects($this->once())
-            ->method('notifyPaymentReady')
-            ->with($this->equalTo($this->cartWrapper), $this->equalTo($this->orderWrapper), $this->equalTo($this->stripeMethod));
+            ->method('notifyPaymentOrderLoad')
+            ->with($this->equalTo($this->paymentBridgeInterface), $this->equalTo($this->stripeMethod));
 
         $this
             ->paymentEventDispatcher
             ->expects($this->once())
-            ->method('notifyPaymentDone')
-            ->with($this->equalTo($this->cartWrapper), $this->equalTo($this->orderWrapper), $this->equalTo($this->stripeMethod));
+            ->method('notifyPaymentOrderDone')
+            ->with($this->equalTo($this->paymentBridgeInterface), $this->equalTo($this->stripeMethod));
+
+        $this
+            ->paymentEventDispatcher
+            ->expects($this->any())
+            ->method('notifyPaymentOrderSuccess')
+            ->with($this->equalTo($this->paymentBridgeInterface), $this->equalTo($this->stripeMethod));
 
         $this
             ->paymentEventDispatcher
             ->expects($this->once())
-            ->method('notifyPaymentFail')
-            ->with($this->equalTo($this->cartWrapper), $this->equalTo($this->orderWrapper), $this->equalTo($this->stripeMethod));
+            ->method('notifyPaymentOrderFail')
+            ->with($this->equalTo($this->paymentBridgeInterface), $this->equalTo($this->stripeMethod));
 
-        $this
-            ->paymentEventDispatcher
-            ->expects($this->any())
-            ->method('notifyPaymentSuccess');
-
-        $this
-            ->paymentEventDispatcher
-            ->expects($this->any())
-            ->method('notifyPaymentOrderCreated');
-
-        $this->stripeManager->processPayment($this->stripeMethod);
+        $this->stripeManager->processPayment($this->stripeMethod, self::CART_AMOUNT);
     }
 
 
@@ -352,19 +267,19 @@ class StripeManagerTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($this->stripeMethod));
 
         $this
-            ->currencyWrapper
+            ->paymentBridgeInterface
             ->expects($this->once())
             ->method('getCurrency')
             ->will($this->returnValue(self::CURRENCY));
 
         $this
-            ->cartWrapper
+            ->paymentBridgeInterface
             ->expects($this->once())
             ->method('getAmount')
             ->will($this->returnValue(self::CART_AMOUNT));
 
         $this
-            ->cartWrapper
+            ->paymentBridgeInterface
             ->expects($this->once())
             ->method('getCartDescription')
             ->will($this->returnValue(self::CART_DESCRIPTION));
@@ -392,32 +307,27 @@ class StripeManagerTest extends \PHPUnit_Framework_TestCase
         $this
             ->paymentEventDispatcher
             ->expects($this->once())
-            ->method('notifyPaymentReady')
-            ->with($this->equalTo($this->cartWrapper), $this->equalTo($this->orderWrapper), $this->equalTo($this->stripeMethod));
+            ->method('notifyPaymentOrderLoad')
+            ->with($this->equalTo($this->paymentBridgeInterface), $this->equalTo($this->stripeMethod));
 
         $this
             ->paymentEventDispatcher
             ->expects($this->once())
-            ->method('notifyPaymentDone')
-            ->with($this->equalTo($this->cartWrapper), $this->equalTo($this->orderWrapper), $this->equalTo($this->stripeMethod));
+            ->method('notifyPaymentOrderDone')
+            ->with($this->equalTo($this->paymentBridgeInterface), $this->equalTo($this->stripeMethod));
 
         $this
             ->paymentEventDispatcher
             ->expects($this->any())
-            ->method('notifyPaymentFail');
+            ->method('notifyPaymentOrderSuccess')
+            ->with($this->equalTo($this->paymentBridgeInterface), $this->equalTo($this->stripeMethod));
 
         $this
             ->paymentEventDispatcher
             ->expects($this->once())
-            ->method('notifyPaymentSuccess')
-            ->with($this->equalTo($this->cartWrapper), $this->equalTo($this->orderWrapper), $this->equalTo($this->stripeMethod));
+            ->method('notifyPaymentOrderFail')
+            ->with($this->equalTo($this->paymentBridgeInterface), $this->equalTo($this->stripeMethod));
 
-        $this
-            ->paymentEventDispatcher
-            ->expects($this->once())
-            ->method('notifyPaymentOrderCreated')
-            ->with($this->equalTo($this->cartWrapper), $this->equalTo($this->orderWrapper), $this->equalTo($this->stripeMethod));
-
-        $this->stripeManager->processPayment($this->stripeMethod);
+        $this->stripeManager->processPayment($this->stripeMethod, self::CART_AMOUNT);
     }
 }
