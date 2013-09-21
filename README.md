@@ -61,7 +61,7 @@ And register StripeBundle in your `AppKernel.php` file.
 Configuration
 =====
 
-Configure the StripeBundle parameters in your `config.yml`
+Configure the StripeBundle parameters in your `config.yml`.
 
     stripe:
 
@@ -94,7 +94,7 @@ Configure the StripeBundle parameters in your `config.yml`
             cart_append: false
             cart_append_field: cart_id
 
-About Stripe `public_key` and `private_key` you can learn more in [Stripe documentation page](https://stripe.com/docs/tutorials/dashboard#api-keys)
+About Stripe `public_key` and `private_key` you can learn more in [Stripe documentation page](https://stripe.com/docs/tutorials/dashboard#api-keys).
 
 Router
 =====
@@ -139,11 +139,12 @@ Customize
 `stripe_render()` just print a basic form.
 
 As every project need its own form design, you can overwrite default form located in: `app/Resources/StripeBundle/views/Stripe/view.html.twig` following [Stripe documentation](https://stripe.com/docs/tutorials/forms).
+
 In another hand, Stripe [recommend](https://stripe.com/docs/tutorials/forms#create-a-single-use-token) use [jQuery form validator](https://github.com/stripe/jquery.payment).
 
 
 Testing and more documentation
 =====
 
-For testing you can use these example[these example](https://stripe.com/docs/testing).
+For testing you can use these example [these example](https://stripe.com/docs/testing).
 More detail about Stripe API you can find in this [web](https://stripe.com/docs/api/php).
