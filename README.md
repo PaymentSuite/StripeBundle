@@ -20,17 +20,18 @@ Table of contents
 5.  [Router](#router)
 6.  [Display](#display)
 7.  [Customize](#customize)
-8.  [Contribute](http://github.com/mmoreram/PaymentCoreBundle/blob/master/Resources/docs/contribute.md)
+8.  [Testing and more documentation](#testing-and-more-documentation)
+9.  [Contribute](http://github.com/mmoreram/PaymentCoreBundle/blob/master/Resources/docs/contribute.md)
 
 About Stripe Bundle
 =====
 
-This bundle bring you a possibility to make simple payments through [Stripe](https://stripe.com). StripeBundle is payment method for Symfony2 Payment Suite and it's built following [PaymentCore](https://github.com/mmoreram/PaymillBundle) specifications. PaymentCore brings for developers easy way to implement several payment methods.
+This bundle bring you a possibility to make simple payments through [Stripe](https://stripe.com). StripeBundle is payment method for Symfony2 Payment Suite and it's built following [PaymentCore](https://github.com/mmoreram/PaymentCoreBundle) specifications. PaymentCore brings for developers easy way to implement several payment methods.
 
 Installing Payment Environment
 =====
 
-PaymillBundle works using an standard, defined in PaymentCoreBundle. You will find [here](http://github.com/mmoreram/PaymentCoreBundle) everything about how to configure your environment to work with this suite
+StripeBundle works using an standard, defined in PaymentCoreBundle. You will find [here](http://github.com/mmoreram/PaymentCoreBundle) everything about how to configure your environment to work with this suite
 
 Installing Stripe Bundle
 =====
@@ -137,4 +138,12 @@ Customize
 
 `stripe_render()` just print a basic form.
 
-As every project need its own form design, you can overwrite default form located in: `app/Resources/StripeBundle/views/Stripe/view.html.twig`
+As every project need its own form design, you can overwrite default form located in: `app/Resources/StripeBundle/views/Stripe/view.html.twig` following [Stripe documentation](https://stripe.com/docs/tutorials/forms).
+In another hand, Stripe [recommend](https://stripe.com/docs/tutorials/forms#create-a-single-use-token) use [jQuery form validator](https://github.com/stripe/jquery.payment).
+
+
+Testing and more documentation
+=====
+
+For testing you can use these example[these example](https://stripe.com/docs/testing).
+More detail about Stripe API you can find in this [web](https://stripe.com/docs/api/php).
