@@ -31,7 +31,7 @@ This bundle bring you a possibility to make simple payments through [Stripe](htt
 Installing Payment Environment
 =====
 
-StripeBundle works using an standard, defined in PaymentCoreBundle. You will find [here](http://github.com/mmoreram/PaymentCoreBundle) everything about how to configure your environment to work with this suite
+StripeBundle works using an standard, defined in PaymentCoreBundle. You will find [here](http://github.com/mmoreram/PaymentCoreBundle) everything about how to configure your environment to work with this suite.
 
 Installing Stripe Bundle
 =====
