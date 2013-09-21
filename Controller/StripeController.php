@@ -48,7 +48,6 @@ class StripeController extends Controller
 
             $paymentMethod = new StripeMethod;
             $paymentMethod
-                ->setAmount((float) $data['amount'])
                 ->setApiToken($data['api_token'])
                 ->setCreditCartNumber($data['credit_cart'])
                 ->setCreditCartExpirationMonth($data['credit_cart_expiration_month'])
@@ -58,12 +57,11 @@ class StripeController extends Controller
             try {
                 $this
                     ->get('stripe.manager')
-                    ->processPayment($paymentMethod);
+                    ->processPayment($paymentMethod, $data['amount']);
 
                 $redirectUrl = $this->container->getParameter('stripe.success.route');
                 $redirectAppend = $this->container->getParameter('stripe.success.order.append');
                 $redirectAppendField = $this->container->getParameter('stripe.success.order.field');
-                $redirectAppendValue = $this->get('payment.order.wrapper')->getOrderId();
 
             } catch (PaymentException $e) {
 
@@ -71,9 +69,8 @@ class StripeController extends Controller
                  * Must redirect to fail route
                  */
                 $redirectUrl = $this->container->getParameter('stripe.fail.route');
-                $redirectAppend = $this->container->getParameter('stripe.fail.cart.append');
-                $redirectAppendField = $this->container->getParameter('stripe.fail.cart.field');
-                $redirectAppendValue = $this->get('payment.cart.wrapper')->getCartId();
+                $redirectAppend = $this->container->getParameter('stripe.fail.order.append');
+                $redirectAppendField = $this->container->getParameter('stripe.fail.order.field');
 
                 throw $e;
             }
@@ -83,12 +80,11 @@ class StripeController extends Controller
              * If form is not valid, fail return page
              */
             $redirectUrl = $this->container->getParameter('stripe.fail.route');
-            $redirectAppend = $this->container->getParameter('stripe.fail.cart.append');
-            $redirectAppendField = $this->container->getParameter('stripe.fail.cart.field');
-            $redirectAppendValue = $this->get('payment.cart.wrapper')->getCartId();
+            $redirectAppend = $this->container->getParameter('stripe.fail.order.append');
+            $redirectAppendField = $this->container->getParameter('stripe.fail.order.field');
         }
 
-        $redirectData   = $redirectAppend ? array($redirectAppendField => $redirectAppendValue) : array();
+        $redirectData   = $redirectAppend ? array($redirectAppendField => $this->get('payment.bridge')->getOrderId()) : array();
 
         return $this->redirect($this->generateUrl($redirectUrl, $redirectData));
     }
