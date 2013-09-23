@@ -33,6 +33,13 @@ use Stripe_Charge;
 class StripeManager
 {
     /**
+     * @var array
+     *
+     * Necessary params to request the payment
+     */
+    protected $chargeParams;
+
+    /**
      * @var PaymentEventDispatcher
      *
      * Payment event dispatcher
@@ -72,17 +79,14 @@ class StripeManager
 
 
     /**
-     * Tries to process a payment through Stripe
+     * Check and set param for payment
+     * @param StripeMethod $paymentMethod
+     * @param $amount
      *
-     * @param StripeMethod $paymentMethod Payment method
-     * @param float        $amount        Amount
-     *
-     * @throws PaymentAmountsNotMatchException
-     * @throws PaymentException
-     *
-     * @return StripeManager Self object
+     * @throws \Mmoreram\PaymentCoreBundle\Exception\PaymentAmountsNotMatchException
+     * @throws PaymentOrderNotFoundException
      */
-    public function processPayment(StripeMethod $paymentMethod, $amount)
+    private function prepareData(StripeMethod $paymentMethod, $amount)
     {
         /// first check that amounts are the same
         $cartAmount = (float) $this->paymentBridge->getAmount();
@@ -103,6 +107,14 @@ class StripeManager
         $this->paymentEventDispatcher->notifyPaymentOrderLoad($this->paymentBridge, $paymentMethod);
 
         /**
+         * Order Not found Exception must be thrown just here
+         */
+        if (!$this->paymentBridge->getOrder()) {
+
+            throw new PaymentOrderNotFoundException;
+        }
+
+        /**
          * Validate the order in the module
          * params for stripe interaction
          */
@@ -111,13 +123,35 @@ class StripeManager
             'exp_month' => $paymentMethod->getCreditCartExpirationMonth(),
             'exp_year' => $paymentMethod->getCreditCartExpirationYear(),
         );
-        $chargeParams = array(
+        $this->chargeParams = array(
             'card' => $cardParams,
             'amount' => intval($cartAmount),
             'currency' => strtolower($this->paymentBridge->getCurrency()),
         );
+    }
 
-        $transaction = $this->transactionWrapper->create($chargeParams);
+
+    /**
+     * Tries to process a payment through Stripe
+     *
+     * @param StripeMethod $paymentMethod Payment method
+     * @param float        $amount        Amount
+     *
+     * @throws PaymentAmountsNotMatchException
+     * @throws PaymentException
+     *
+     * @return StripeManager Self object
+     */
+    public function processPayment(StripeMethod $paymentMethod, $amount)
+    {
+        /**
+         * check and set payment data
+         */
+        $this->prepareData($paymentMethod, $amount);
+        /**
+         * make payment
+         */
+        $transaction = $this->transactionWrapper->create($this->chargeParams);
 
         /**
          * Payment paid done
