@@ -16,6 +16,7 @@ namespace dpcat237\StripeBundle\Services;
 use Services_Stripe_Transactions;
 use Mmoreram\PaymentCoreBundle\Services\Interfaces\PaymentBridgeInterface;
 use Mmoreram\PaymentCoreBundle\Exception\PaymentAmountsNotMatchException;
+use Mmoreram\PaymentCoreBundle\Exception\PaymentOrderNotFoundException;
 use Mmoreram\PaymentCoreBundle\Exception\PaymentException;
 use Mmoreram\PaymentCoreBundle\Services\PaymentEventDispatcher;
 
