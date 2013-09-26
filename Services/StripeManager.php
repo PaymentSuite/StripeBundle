@@ -81,10 +81,13 @@ class StripeManager
 
     /**
      * Check and set param for payment
-     * @param StripeMethod $paymentMethod
-     * @param $amount
+     * 
+     * @param StripeMethod $paymentMethod Payment method
+     * @param float        $amount        Amount
+     * 
+     * @return StripeManager self Object
      *
-     * @throws \Mmoreram\PaymentCoreBundle\Exception\PaymentAmountsNotMatchException
+     * @throws PaymentAmountsNotMatchException
      * @throws PaymentOrderNotFoundException
      */
     private function prepareData(StripeMethod $paymentMethod, $amount)
@@ -116,6 +119,11 @@ class StripeManager
         }
 
         /**
+         * Order exists right here
+         */
+        $this->paymentEventDispatcher->notifyPaymentOrderCreated($this->paymentBridge, $paymentMethod);
+
+        /**
          * Validate the order in the module
          * params for stripe interaction
          */
@@ -124,11 +132,14 @@ class StripeManager
             'exp_month' => $paymentMethod->getCreditCartExpirationMonth(),
             'exp_year' => $paymentMethod->getCreditCartExpirationYear(),
         );
+
         $this->chargeParams = array(
             'card' => $cardParams,
             'amount' => intval($cartAmount),
             'currency' => strtolower($this->paymentBridge->getCurrency()),
         );
+
+        return $this;
     }
 
 

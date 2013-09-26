@@ -157,27 +157,27 @@ class StripeManagerTest extends \PHPUnit_Framework_TestCase
         $this
             ->paymentEventDispatcher
             ->expects($this->any())
-            ->method('notifyPaymentReady');
-
-        $this
-            ->paymentEventDispatcher
-            ->expects($this->any())
-            ->method('notifyPaymentDone');
-
-        $this
-            ->paymentEventDispatcher
-            ->expects($this->any())
-            ->method('notifyPaymentFail');
-
-        $this
-            ->paymentEventDispatcher
-            ->expects($this->any())
-            ->method('notifyPaymentSuccess');
+            ->method('notifyPaymentOrderLoad');
 
         $this
             ->paymentEventDispatcher
             ->expects($this->any())
             ->method('notifyPaymentOrderCreated');
+
+        $this
+            ->paymentEventDispatcher
+            ->expects($this->any())
+            ->method('notifyPaymentOrderDone');
+
+        $this
+            ->paymentEventDispatcher
+            ->expects($this->any())
+            ->method('notifyPaymentOrderFail');
+
+        $this
+            ->paymentEventDispatcher
+            ->expects($this->any())
+            ->method('notifyPaymentOrderSuccess');
 
         $this->stripeManager->processPayment($this->stripeMethod, self::CART_AMOUNT);
     }
@@ -248,6 +248,12 @@ class StripeManagerTest extends \PHPUnit_Framework_TestCase
             ->paymentEventDispatcher
             ->expects($this->once())
             ->method('notifyPaymentOrderLoad')
+            ->with($this->equalTo($this->paymentBridge), $this->equalTo($this->stripeMethod));
+
+        $this
+            ->paymentEventDispatcher
+            ->expects($this->once())
+            ->method('notifyPaymentOrderCreated')
             ->with($this->equalTo($this->paymentBridge), $this->equalTo($this->stripeMethod));
 
         $this
@@ -353,6 +359,12 @@ class StripeManagerTest extends \PHPUnit_Framework_TestCase
             ->paymentEventDispatcher
             ->expects($this->once())
             ->method('notifyPaymentOrderLoad')
+            ->with($this->equalTo($this->paymentBridge), $this->equalTo($this->stripeMethod));
+
+        $this
+            ->paymentEventDispatcher
+            ->expects($this->once())
+            ->method('notifyPaymentOrderCreated')
             ->with($this->equalTo($this->paymentBridge), $this->equalTo($this->stripeMethod));
 
         $this
