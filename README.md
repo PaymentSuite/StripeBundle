@@ -146,5 +146,5 @@ In another hand, Stripe [recommend](https://stripe.com/docs/tutorials/forms#crea
 Testing and more documentation
 =====
 
-For testing you can use these example [these example](https://stripe.com/docs/testing).
+For testing you can use [these examples](https://stripe.com/docs/testing).
 More detail about Stripe API you can find in this [web](https://stripe.com/docs/api/php).
