@@ -9,7 +9,7 @@ services:
     stripe.transaction.wrapper:
         class: %stripe.transaction.wrapper.class%
         arguments:
-            stripe.api.endpoint: %stripe.private.key%
+            stripe.private.key: %stripe.private.key%
 
     stripe.manager:
         class: %stripe.manager.class%

@@ -99,7 +99,6 @@ class StripeManager
          * If both amounts are different, execute Exception
          */
         if (abs($amount - $cartAmount) > 0.00001) {
-
             throw new PaymentAmountsNotMatchException;
         }
 
@@ -114,7 +113,6 @@ class StripeManager
          * Order Not found Exception must be thrown just here
          */
         if (!$this->paymentBridge->getOrder()) {
-
             throw new PaymentOrderNotFoundException;
         }
 
