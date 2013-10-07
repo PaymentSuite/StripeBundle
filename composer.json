@@ -19,8 +19,8 @@
         "symfony/http-kernel": ">=2.2.3",
         "symfony/dependency-injection": ">=2.2.3",
         "twig/twig": "~1.11",
-        "mmoreram/payment-core-bundle": "dev-master",
-        "stripe/stripe-php": "dev-master"
+        "stripe/stripe-php": "dev-master",
+        "mmoreram/payment-core-bundle": "1.0.1"
     },
     "target-dir": "dpcat237/StripeBundle",
     "autoload": {
