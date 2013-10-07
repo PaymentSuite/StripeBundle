@@ -1,8 +1,8 @@
 StripeBundle - PayFony
 =====
 
-[![Payment Suite](http://mmoreram.github.io/PaymentCoreBundle/public/images/payment-suite.png)](https://github.com/mmoreram/PaymentCoreBundle)
-[![Payment Suite](http://mmoreram.github.io/PaymentCoreBundle/public/images/still-maintained.png)]()
+[![Payment Suite](https://raw.github.com/mmoreram/PaymentCoreBundle/gh-pages/public/images/payment-suite.png)](https://github.com/mmoreram/PaymentCoreBundle)
+[![Payment Suite](https://raw.github.com/mmoreram/PaymentCoreBundle/gh-pages/public/images/still-maintained.png)]()
 [![Build Status](https://travis-ci.org/mmoreram/PaymillBundle.png?branch=master)](https://travis-ci.org/dpcat237/StripeBundle)
 [![Scrutinizer Quality Score](https://scrutinizer-ci.com/g/dpcat237/StripeBundle/badges/quality-score.png?s=10dab38a47f5ca4c11a2de2e4f1237555c5e8660)](https://scrutinizer-ci.com/g/dpcat237/StripeBundle/)
 
