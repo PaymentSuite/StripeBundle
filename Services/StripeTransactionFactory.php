@@ -11,22 +11,23 @@
  * @author Marc Morera <yuhu@mmoreram.com>
  */
 
-namespace PaymentSuite\StripeBundle\Services\Wrapper;
+namespace PaymentSuite\StripeBundle\Services;
 
-use Stripe;
-use Stripe_Charge;
+use Exception;
+use Stripe\Charge;
+use Stripe\Stripe;
 
 /**
- * Stripe transaction wrapper
+ * class StripeTransactionFactory
  */
-class StripeTransactionWrapper
+class StripeTransactionFactory
 {
     /**
      * @var string
      *
      * Private key
      */
-    protected $privateKey;
+    private $privateKey;
 
     /**
      * Construct method for stripe transaction wrapper
@@ -43,17 +44,18 @@ class StripeTransactionWrapper
      *
      * @param array $params Set of params
      *
-     * @return array            Result of transaction
+     * @return array Result of transaction
      */
     public function create(array $params)
     {
         try {
             Stripe::setApiKey($this->privateKey);
-            $charge = Stripe_Charge::create($params);
-            $chargeData = json_decode($charge, true);
-        } catch (\Exception $e) {
+            $chargeData = Charge::create($params);
+        } catch (Exception $e) {
             // The way to get to 'notifyPaymentOrderFail'
-            return array('paid' => 0);
+            return [
+                'paid' => 0,
+            ];
         }
 
         return $chargeData;
